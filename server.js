@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const fs = require('fs');
+
 const path = require('path');
 
 const app = express();
@@ -17,36 +17,14 @@ app.use(express.static('public'));
 
 // 默认接口配置 (保持你的 30+ 个接口不变)
 const DEFAULT_SITES = [
-    { key: "ffzy", name: "非凡影视", api: "https://替换接口 一行一条", active: true }
+    { key: "ffzy", name: "非凡影视", api: "http://api.ffzyapi.com/api.php/provide/vod/", active: true }
 ]
 
-if (!fs.existsSync(DATA_FILE) || FORCE_UPDATE) {
-    // 只有在没有文件时，或者强制更新开启时，才重置配置
-    // 但为了不覆盖你可能手动添加的，我们这里只在文件不存在时写入，或者你确认要重置
-    if(!fs.existsSync(DATA_FILE)) {
-        fs.writeFileSync(DATA_FILE, JSON.stringify({ sites: DEFAULT_SITES }, null, 2));
-    }
-}
 
 function getDB() { 
-    try {
-        const data = JSON.parse(fs.readFileSync(DATA_FILE));
-        // 简单的合并逻辑：确保代码里的30多个接口都在数据库里
-        if(FORCE_UPDATE) {
-            const dbSites = data.sites || [];
-            DEFAULT_SITES.forEach(defSite => {
-                if(!dbSites.find(s => s.key === defSite.key)) {
-                    dbSites.push(defSite);
-                }
-            });
-            return { sites: dbSites };
-        }
-        return data;
-    } catch(e) {
         return { sites: DEFAULT_SITES };
-    }
 }
-function saveDB(data) { fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2)); }
+function saveDB(data) {  }
 
 // === ★ 新增：真实测速接口 ★ ===
 app.get('/api/check', async (req, res) => {
